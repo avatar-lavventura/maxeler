@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<maxCompilerManager>
+<enginePart internalEngineSubproject="PrefixSum_EngineCode" isSrcBin="false" isUseDefaultSelected="false" outputLocation="/PrefixSum_EngineCode/bin" projectName="PrefixSum"/>
+<cpuPart internalCpuSubproject="PrefixSum_CPUCode"/>
+<watchedFiles/>
+</maxCompilerManager>
