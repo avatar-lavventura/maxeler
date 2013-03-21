@@ -68,15 +68,36 @@ all:
 $(THIS_FILE): $(THIS_PATH)RunRules.settings
 	java -jar $(MAXIDEDIR)/projectAdmin.jar -u $(THIS_PATH)../../ DFE
 	
-MAXFILEBUILDNAMEDEFS=
+#
+# MaxFile: PrefixSum
+#
+
+
+BUILDNAME_MAXFILE_1:=PrefixSum
+MAXFILE_1:=PrefixSum.max
+
+$(OBJDIR)/PrefixSum.o: $(MAXDIR)/PrefixSum.max
+	$(MAXFILECOMPILE) "$<" "$@" "PrefixSum"
+
+$(OBJDIR)/slic_PrefixSum.o: $(MAXDIR)/PrefixSum.max
+	$(SLICCOMPILE) "$<" "$@"
+
+$(MAXDIR)/PrefixSum.max: 
+	cd "$(THIS_PATH)/" && if [ -z "$${MAXCOMPILER_BUILD_DIR+xxx}" ]; then export MAXCOMPILER_BUILD_DIR="$(realpath $(MAXDIR))"; fi ;  export MAX_BUILDPARAMS="DFEModel='MAX3424A' target='DFE' maxFileName='PrefixSum' " ; ant -v -f "PrefixSum.xml" run 2>&1 | tee PrefixSum_cmd.log
+	cp "`grep -o -e "^.*MaxFile: .*\.max" $(THIS_PATH)/PrefixSum_cmd.log | cut -d ':'  -f 4 | sed 's/^ //g'`" "$(MAXDIR)/PrefixSum.max"
+	cp "`grep -o -e "^.*MaxFile: .*\.max" $(THIS_PATH)/PrefixSum_cmd.log | cut -d ':'  -f 4 | sed 's/^ //g' | sed 's/\.max/.h/g'`" "$(MAXDIR)/PrefixSum.h"
+	cp -f "$(MAXDIR)/"*.h "$(INCDIR)/"
+
+
+MAXFILEBUILDNAMEDEFS=-DBUILDNAME_MAXFILE_1=PrefixSum -DMAXFILE_1="PrefixSum.max" 
 
 
 #
 # List of all MAX files
 #
-MAXFILEOBJECTS := 
+MAXFILEOBJECTS := $(OBJDIR)/PrefixSum.o 
 
-SLICFILEOBJECTS := 
+SLICFILEOBJECTS := $(OBJDIR)/slic_PrefixSum.o 
 
 
 #
