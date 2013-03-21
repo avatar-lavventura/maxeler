@@ -1,5 +1,6 @@
 #include "Maxfiles.h"
-
+#include <MaxSLiCInterface.h>
+#include <stdio.h>
 #define SIZE 16
 
 void prefix_sum_cpu(long *dataIn, long *dataOut, int size) {
@@ -29,7 +30,7 @@ int main() {
 		if(dataOut[i] == dataExpected[i]) {
 			printf("dataExpected[%d] = dataOut[%d] = %ld\n", i, i, dataOut[i]);
 		} else {
-			fprintf(stderr, "dataExpected[%d] = %ld\t\tdataOut[%d] = %ld\n",
+			printf("dataExpected[%d] = %ld\t\tdataOut[%d] = %ld\n",
 					i, dataExpected[i], i, dataOut[i]);
 		}
 	}
