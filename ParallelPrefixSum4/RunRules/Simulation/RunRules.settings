@@ -21,7 +21,7 @@
 <remoteMachineName></remoteMachineName>
 <scriptName></scriptName>
 </remoteExecution>
-<customDefinitions># This text will be included verbatim in the build process.&#x0A;# It has to be valid Makefile syntax.&#x0A;# Set USE_SLIC=1 if your CPUCode uses the SLiC interface.</customDefinitions>
+<customDefinitions># This text will be included verbatim in the build process.&#x0A;# It has to be valid Makefile syntax.&#x0A;# Set USE_SLIC=1 if your CPUCode uses the SLiC interface.&#x0A;USE_SLIC=1</customDefinitions>
 </cpuCode>
 <simulator>
 <deleteDRAM enabled="false"/>
