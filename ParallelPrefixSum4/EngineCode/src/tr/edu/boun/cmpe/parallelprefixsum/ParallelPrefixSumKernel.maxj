@@ -16,8 +16,20 @@ public class ParallelPrefixSumKernel extends Kernel {
 		super(parameters);
 
 		DFEVector<DFEVar> x = io.input("x", TYPE_VECTOR);
+		DFEVector<DFEVar> y = TYPE_VECTOR.newInstance(this);
 
-		io.output("y", x.mul(2), TYPE_VECTOR);
+		DFEVar first = x.getElement(0);
+		y.connect(0, first);
+
+		DFEVar previous = first;
+		for(int i = 1; i < SIZE_VECTOR; i++) {
+			DFEVar current = x.getElement(i);
+			current += previous;
+			y.connect(i, current);
+			previous = current;
+		}
+
+		io.output("y", y, TYPE_VECTOR);
 	}
 
 }
