@@ -18,6 +18,8 @@ public class ParallelPrefixSumKernel extends Kernel {
 		DFEVector<DFEVar> x = io.input("x", TYPE_VECTOR);
 		DFEVector<DFEVar> y = TYPE_VECTOR.newInstance(this);
 
+		// TODO: add carried sum to all elements of x before connecting to y
+
 		DFEVar first = x.getElement(0);
 		y.connect(0, first);
 
@@ -29,7 +31,8 @@ public class ParallelPrefixSumKernel extends Kernel {
 			previous = current;
 		}
 
+		// TODO: previous will be carried sum
+
 		io.output("y", y, TYPE_VECTOR);
 	}
-
 }
