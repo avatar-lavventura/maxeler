@@ -2,6 +2,7 @@ package tr.edu.boun.cmpe.parallelprefixsum;
 
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
 import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.core.Stream.OffsetExpr;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
@@ -18,21 +19,38 @@ public class ParallelPrefixSumKernel extends Kernel {
 		DFEVector<DFEVar> x = io.input("x", TYPE_VECTOR);
 		DFEVector<DFEVar> y = TYPE_VECTOR.newInstance(this);
 
-		// TODO: add carried sum to all elements of x before connecting to y
+		OffsetExpr loopLength = stream.makeOffsetAutoLoop("loopLength");
+
+		DFEVar carriedSum = TYPE_ELEMENT.newInstance(this);
+		DFEVar counter = control.count.simpleCounter(32);
+		DFEVar carry = counter.eq(0)?0:carriedSum;
+		debug.printf("carry = %d \n", carry);
 
 		DFEVar first = x.getElement(0);
-		y.connect(0, first);
+
+		y.connect(0, first+carry);
 
 		DFEVar previous = first;
+		optimization.pushPipeliningFactor(0.0);
 		for(int i = 1; i < SIZE_VECTOR; i++) {
 			DFEVar current = x.getElement(i);
-			current += previous;
-			y.connect(i, current);
-			previous = current;
+			current += previous ;
+			y.connect(i, current+carry);
+			previous = current+carry;
 		}
+		optimization.popPipeliningFactor();
+		/*
+		optimization.pushPipeliningFactor(0.0);
 
-		// TODO: previous will be carried sum
-
+		DFEVar x1 = x.getElement(0)+carry;
+		y.connect(0, x1);
+		DFEVar x2 = x.getElement(1)+x1;
+		y.connect(1, x2);
+		optimization.popPipeliningFactor();
+		carriedSum <== stream.offset(y.getElement(1), -loopLength);
+		*/
+		carriedSum <== stream.offset(previous, -loopLength);
+		debug.printf("tick = %d, carriedSum = %d looplength = %d \n", counter,carriedSum,loopLength.getDFEVar(this,TYPE_ELEMENT));
 		io.output("y", y, TYPE_VECTOR);
 	}
 }
