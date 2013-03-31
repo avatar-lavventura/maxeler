@@ -1,9 +1,9 @@
 #include "Maxfiles.h"
 #include <MaxSLiCInterface.h>
 #include <stdio.h>
-#define SIZE 16
+#define SIZE 512
 
-void prefix_sum_cpu(long *dataIn, long *dataOut, int size) {
+void prefix_sum_cpu(int *dataIn, int *dataOut, int size) {
 	dataOut[0] = dataIn[0];
 	for(int i = 1; i < size; i++) {
 		dataOut[i] = dataIn[i] + dataOut[i - 1];
@@ -11,7 +11,7 @@ void prefix_sum_cpu(long *dataIn, long *dataOut, int size) {
 }
 
 int main() {
-	long dataIn[SIZE], dataOut[SIZE], dataExpected[SIZE];
+	int dataIn[SIZE], dataOut[SIZE], dataExpected[SIZE];
 
 	// initialize dataIn
 	for(int i = 0; i < SIZE; i++) {
@@ -28,9 +28,9 @@ int main() {
 	// print result
 	for(int i = 0; i < SIZE; i++) {
 		if(dataOut[i] == dataExpected[i]) {
-			printf("dataExpected[%d] = dataOut[%d] = %ld\n", i, i, dataOut[i]);
+			printf("dataExpected[%d] = dataOut[%d] = %d\n", i, i, dataOut[i]);
 		} else {
-			printf("dataExpected[%d] = %ld\t\tdataOut[%d] = %ld\n",
+			printf("dataExpected[%d] = %d\t\tdataOut[%d] = %d\n",
 					i, dataExpected[i], i, dataOut[i]);
 		}
 	}

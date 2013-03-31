@@ -2,6 +2,7 @@ package com.googlecode.maxeler.prefixsum;
 
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
 import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.core.Stream.OffsetExpr;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
 
@@ -12,7 +13,7 @@ public class PrefixSumKernel extends Kernel {
 
 	protected PrefixSumKernel(KernelParameters parameters) {
 		super(parameters);
-
+		/*
 		DFEVar input = io.input("input", TYPE_INT64);
 		DFEVar carriedSum = TYPE_INT64.newInstance(this);
 		DFEVar index = control.count.simpleCounter(32);
@@ -28,6 +29,15 @@ public class PrefixSumKernel extends Kernel {
 		carriedSum <== stream.offset(output, -1);
 
 		io.output("io", output, TYPE_INT64);
+		*/
+		OffsetExpr loopLength = stream.makeOffsetAutoLoop("loopLength");
+		DFEVar input = io.input("input", TYPE_INT32);
+		DFEVar carriedSum = TYPE_INT32.newInstance(this);
+		DFEVar index = control.count.simpleCounter(32);
+		DFEVar carry = index.eq(0) ? 0 : carriedSum;
+		DFEVar output = input + carry;
+		carriedSum <== stream.offset(output, -loopLength);
+		io.output("output", output, TYPE_INT32);
 	}
 
 }
