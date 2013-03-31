@@ -26,29 +26,17 @@ public class ParallelPrefixSumKernel extends Kernel {
 		DFEVar carry = counter.eq(0)?0:carriedSum;
 		debug.printf("carry = %d \n", carry);
 
-		DFEVar first = x.getElement(0);
+		DFEVar first = x.getElement(0)+carry;
 
-		y.connect(0, first+carry);
+		y.connect(0, first);
 
 		DFEVar previous = first;
-		optimization.pushPipeliningFactor(0.0);
 		for(int i = 1; i < SIZE_VECTOR; i++) {
 			DFEVar current = x.getElement(i);
 			current += previous ;
-			y.connect(i, current+carry);
-			previous = current+carry;
+			y.connect(i, current);
+			previous = current;
 		}
-		optimization.popPipeliningFactor();
-		/*
-		optimization.pushPipeliningFactor(0.0);
-
-		DFEVar x1 = x.getElement(0)+carry;
-		y.connect(0, x1);
-		DFEVar x2 = x.getElement(1)+x1;
-		y.connect(1, x2);
-		optimization.popPipeliningFactor();
-		carriedSum <== stream.offset(y.getElement(1), -loopLength);
-		*/
 		carriedSum <== stream.offset(previous, -loopLength);
 		debug.printf("tick = %d, carriedSum = %d looplength = %d \n", counter,carriedSum,loopLength.getDFEVar(this,TYPE_ELEMENT));
 		io.output("y", y, TYPE_VECTOR);
