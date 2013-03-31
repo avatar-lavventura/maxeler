@@ -19,14 +19,16 @@ const char* PrefixSum_get_errors(void);
 /**
  * \brief Basic static function for the interface 'default'.
  * 
- * \param [in] param_N Interface Parameter "N".: Number of data items to process
- * \param [in] instream_input The stream should be of size (param_N * 8) bytes.
- * \param [out] outstream_io The stream should be of size (param_N * 8) bytes.
+ * \param [in] param_length Interface Parameter "length".
+ * \param [in] ticks_PrefixSumKernel The number of ticks for which kernel "PrefixSumKernel" will run.
+ * \param [in] instream_input The stream should be of size (param_length * 4) bytes.
+ * \param [out] outstream_output The stream should be of size (param_length * 4) bytes.
  */
 void PrefixSum(
-	int32_t param_N,
-	const int64_t *instream_input,
-	int64_t *outstream_io);
+	int64_t param_length,
+	uint64_t ticks_PrefixSumKernel,
+	const int32_t *instream_input,
+	int32_t *outstream_output);
 
 /**
  * \brief Basic static non-blocking function for the interface 'default'.
@@ -36,24 +38,27 @@ void PrefixSum(
  * note that one of these *must* be called, so that associated memory can be released.
  * 
  * 
- * \param [in] param_N Interface Parameter "N".: Number of data items to process
- * \param [in] instream_input The stream should be of size (param_N * 8) bytes.
- * \param [out] outstream_io The stream should be of size (param_N * 8) bytes.
+ * \param [in] param_length Interface Parameter "length".
+ * \param [in] ticks_PrefixSumKernel The number of ticks for which kernel "PrefixSumKernel" will run.
+ * \param [in] instream_input The stream should be of size (param_length * 4) bytes.
+ * \param [out] outstream_output The stream should be of size (param_length * 4) bytes.
  * \return A handle on the execution status, or NULL in case of error.
  */
 max_run_t *PrefixSum_nonblock(
-	int32_t param_N,
-	const int64_t *instream_input,
-	int64_t *outstream_io);
+	int64_t param_length,
+	uint64_t ticks_PrefixSumKernel,
+	const int32_t *instream_input,
+	int32_t *outstream_output);
 
 /**
  * \brief Advanced static interface, structure for the engine interface 'default'
  * 
  */
 typedef struct { 
-	int32_t param_N; /**<  [in] Interface Parameter "N".: Number of data items to process */
-	const int64_t *instream_input; /**<  [in] The stream should be of size (param_N * 8) bytes. */
-	int64_t *outstream_io; /**<  [out] The stream should be of size (param_N * 8) bytes. */
+	int64_t param_length; /**<  [in] Interface Parameter "length". */
+	uint64_t ticks_PrefixSumKernel; /**<  [in] The number of ticks for which kernel "PrefixSumKernel" will run. */
+	const int32_t *instream_input; /**<  [in] The stream should be of size (param_length * 4) bytes. */
+	int32_t *outstream_output; /**<  [out] The stream should be of size (param_length * 4) bytes. */
 } PrefixSum_actions_t;
 
 /**
