@@ -1,0 +1,4 @@
+tick = 0, caddiedSum = 0 
+tick = 1, caddiedSum = 0 
+tick = 2, caddiedSum = 3 
+tick = 3, caddiedSum = 7 
