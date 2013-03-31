@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "Maxfiles.h"
 
-#define SIZE 32
+#define SIZE 512
 
 int main() {
 	size_t sizeInBytes = SIZE * sizeof(uint32_t);

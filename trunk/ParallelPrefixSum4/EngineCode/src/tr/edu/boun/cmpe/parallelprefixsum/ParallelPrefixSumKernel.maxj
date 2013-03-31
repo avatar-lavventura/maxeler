@@ -9,7 +9,7 @@ import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVectorType;
 
 public class ParallelPrefixSumKernel extends Kernel {
-	final static int SIZE_VECTOR = 4;
+	final static int SIZE_VECTOR = 8;
 	final DFEType TYPE_ELEMENT = dfeUInt(32);
 	final DFEVectorType<DFEVar> TYPE_VECTOR = new DFEVectorType<DFEVar>(TYPE_ELEMENT, SIZE_VECTOR);
 
@@ -18,27 +18,26 @@ public class ParallelPrefixSumKernel extends Kernel {
 
 		DFEVector<DFEVar> x = io.input("x", TYPE_VECTOR);
 		DFEVector<DFEVar> y = TYPE_VECTOR.newInstance(this);
-
 		OffsetExpr loopLength = stream.makeOffsetAutoLoop("loopLength");
-
 		DFEVar carriedSum = TYPE_ELEMENT.newInstance(this);
 		DFEVar counter = control.count.simpleCounter(32);
 		DFEVar carry = counter.eq(0)?0:carriedSum;
-		debug.printf("carry = %d \n", carry);
-
+		//debug.printf("carry = %d \n", carry);
 		DFEVar first = x.getElement(0)+carry;
-
+		optimization.pushPipeliningFactor(0.0);
 		y.connect(0, first);
 
 		DFEVar previous = first;
+
 		for(int i = 1; i < SIZE_VECTOR; i++) {
 			DFEVar current = x.getElement(i);
 			current += previous ;
 			y.connect(i, current);
 			previous = current;
 		}
+		optimization.popPipeliningFactor();
 		carriedSum <== stream.offset(previous, -loopLength);
-		debug.printf("tick = %d, carriedSum = %d looplength = %d \n", counter,carriedSum,loopLength.getDFEVar(this,TYPE_ELEMENT));
+		//debug.printf("tick = %d, carriedSum = %d looplength = %d \n", counter,carriedSum,loopLength.getDFEVar(this,TYPE_ELEMENT));
 		io.output("y", y, TYPE_VECTOR);
 	}
 }

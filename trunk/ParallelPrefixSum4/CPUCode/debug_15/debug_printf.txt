@@ -1,0 +1,16 @@
+tick = 0, carriedSum = 3 looplength = 0 
+tick = 1, carriedSum = 7 looplength = 0 
+tick = 2, carriedSum = 11 looplength = 0 
+tick = 3, carriedSum = 15 looplength = 0 
+tick = 4, carriedSum = 19 looplength = 0 
+tick = 5, carriedSum = 23 looplength = 0 
+tick = 6, carriedSum = 27 looplength = 0 
+tick = 7, carriedSum = 31 looplength = 0 
+tick = 8, carriedSum = 35 looplength = 0 
+tick = 9, carriedSum = 39 looplength = 0 
+tick = 10, carriedSum = 43 looplength = 0 
+tick = 11, carriedSum = 47 looplength = 0 
+tick = 12, carriedSum = 51 looplength = 0 
+tick = 13, carriedSum = 55 looplength = 0 
+tick = 14, carriedSum = 59 looplength = 0 
+tick = 15, carriedSum = 63 looplength = 0 

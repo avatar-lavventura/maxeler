@@ -1,0 +1,8 @@
+tick = 0, caddiedSum = 0 
+tick = 1, caddiedSum = 0 
+tick = 2, caddiedSum = 0 
+tick = 3, caddiedSum = 0 
+tick = 4, caddiedSum = 10 
+tick = 5, caddiedSum = 26 
+tick = 6, caddiedSum = 42 
+tick = 7, caddiedSum = 58 
