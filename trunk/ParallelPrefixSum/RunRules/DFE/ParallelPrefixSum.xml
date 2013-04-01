@@ -11,7 +11,7 @@
 	</condition>
 	<target name="all" depends="run"/>
 	<target name="build">
-		<ant inheritAll="false" antfile="../RunRules/DFE/ParallelPrefixSUm_Build.xml"/>
+		<ant inheritAll="false" antfile="../RunRules/DFE/ParallelPrefixSum_Build.xml"/>
 	</target>
 	<target name="run" depends="build">
 		<condition property="args" value="">
@@ -30,7 +30,7 @@
 		</java>
 	</target>
 	<target name="clean">
-		<ant inheritAll="false" antfile="../RunRules/DFE/ParallelPrefixSUm_Build.xml" target="clean"/>
+		<ant inheritAll="false" antfile="../RunRules/DFE/ParallelPrefixSum_Build.xml" target="clean"/>
 	</target>
 	<target name="jar" depends="build">
 		<mkdir dir="../RunRules/DFE/dist/jar"/>
@@ -44,11 +44,11 @@
 		</jar>
 	</target>
 	<target name="help">
-		<echo message="ant -f ParallelPrefixSUm.xml -Dargs=&quot;${Value}&quot;&#9;Run project" />
-		<echo message="ant -f ParallelPrefixSUm.xml build&#9;&#9;&#9;Compile project" />
-		<echo message="ant -f ParallelPrefixSUm.xml run -Dargs=&quot;${Value}&quot;&#9;Run project" />
-		<echo message="ant -f ParallelPrefixSUm.xml clean&#9;&#9;&#9;Delete temp folders" />
-		<echo message="ant -f ParallelPrefixSUm.xml jar&#9;&#9;&#9;Create jar package" />
-		<echo message="ant -f ParallelPrefixSUm.xml help&#9;&#9;&#9;Print help message" />
+		<echo message="ant -f ParallelPrefixSum.xml -Dargs=&quot;${Value}&quot;&#9;Run project" />
+		<echo message="ant -f ParallelPrefixSum.xml build&#9;&#9;&#9;Compile project" />
+		<echo message="ant -f ParallelPrefixSum.xml run -Dargs=&quot;${Value}&quot;&#9;Run project" />
+		<echo message="ant -f ParallelPrefixSum.xml clean&#9;&#9;&#9;Delete temp folders" />
+		<echo message="ant -f ParallelPrefixSum.xml jar&#9;&#9;&#9;Create jar package" />
+		<echo message="ant -f ParallelPrefixSum.xml help&#9;&#9;&#9;Print help message" />
 	</target>
 </project>
