@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "Maxfiles.h"
 
-#define SIZE 4096
+#define SIZE 1073741824
 
 void prefix_sum_cpu(uint32_t *dataIn, uint32_t *dataOut, int size) {
 	dataOut[0] = dataIn[0];
