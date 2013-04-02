@@ -1,8 +1,0 @@
-tick = 0, carriedSum = 0 looplength = 4 
-tick = 1, carriedSum = 0 looplength = 4 
-tick = 2, carriedSum = 0 looplength = 4 
-tick = 3, carriedSum = 0 looplength = 4 
-tick = 4, carriedSum = 10 looplength = 4 
-tick = 5, carriedSum = 26 looplength = 4 
-tick = 6, carriedSum = 42 looplength = 4 
-tick = 7, carriedSum = 58 looplength = 4 
