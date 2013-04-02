@@ -1,5 +1,4 @@
-package tr.edu.boun.cmpe.parallelprefixsum;
-
+package parallelprefixsum;
 
 import com.maxeler.maxcompiler.v2.build.EngineParameters;
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
@@ -24,10 +23,14 @@ public class ParallelPrefixSumManager {
 
 	static EngineInterface defaultInterface() {
 		EngineInterface ei = new EngineInterface();
-		InterfaceParam size = ei.addParam("size", CPUTypes.UINT32);
-		ei.setTicks("ParallelPrefixSumKernel", size / ParallelPrefixSumKernel.SIZE_VECTOR);
-		ei.setStream("x", CPUTypes.UINT32, size * CPUTypes.UINT32.sizeInBytes());
-		ei.setStream("y", CPUTypes.UINT32, size * CPUTypes.UINT32.sizeInBytes());
+		InterfaceParam size = ei.addParam("size", CPUTypes.UINT64);
+		ei.setTicks("ParallelPrefixSumKernel", size / ParallelPrefixSumKernel.PARALLELISM_DEGREE);
+
+		CPUTypes dataType = CPUTypes.INT64;
+		InterfaceParam dataSizeInBytes = size * dataType.sizeInBytes();
+
+		ei.setStream("x", dataType, dataSizeInBytes);
+		ei.setStream("y", dataType, dataSizeInBytes);
 
 		return ei;
 	}
