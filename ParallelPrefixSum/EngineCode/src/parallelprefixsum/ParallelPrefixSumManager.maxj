@@ -26,7 +26,7 @@ public class ParallelPrefixSumManager {
 		InterfaceParam size = ei.addParam("size", CPUTypes.UINT64);
 		ei.setTicks("ParallelPrefixSumKernel", size / ParallelPrefixSumKernel.PARALLELISM_DEGREE);
 
-		CPUTypes dataType = CPUTypes.INT64;
+		CPUTypes dataType = CPUTypes.INT32;
 		InterfaceParam dataSizeInBytes = size * dataType.sizeInBytes();
 
 		ei.setStream("x", dataType, dataSizeInBytes);

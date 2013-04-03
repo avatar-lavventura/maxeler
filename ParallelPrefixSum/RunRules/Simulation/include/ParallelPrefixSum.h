@@ -20,13 +20,13 @@ const char* ParallelPrefixSum_get_errors(void);
  * \brief Basic static function for the interface 'default'.
  * 
  * \param [in] param_size Interface Parameter "size".
- * \param [in] instream_x The stream should be of size (param_size * 8) bytes.
- * \param [out] outstream_y The stream should be of size (param_size * 8) bytes.
+ * \param [in] instream_x The stream should be of size (param_size * 4) bytes.
+ * \param [out] outstream_y The stream should be of size (param_size * 4) bytes.
  */
 void ParallelPrefixSum(
 	uint64_t param_size,
-	const int64_t *instream_x,
-	int64_t *outstream_y);
+	const int32_t *instream_x,
+	int32_t *outstream_y);
 
 /**
  * \brief Basic static non-blocking function for the interface 'default'.
@@ -37,14 +37,14 @@ void ParallelPrefixSum(
  * 
  * 
  * \param [in] param_size Interface Parameter "size".
- * \param [in] instream_x The stream should be of size (param_size * 8) bytes.
- * \param [out] outstream_y The stream should be of size (param_size * 8) bytes.
+ * \param [in] instream_x The stream should be of size (param_size * 4) bytes.
+ * \param [out] outstream_y The stream should be of size (param_size * 4) bytes.
  * \return A handle on the execution status, or NULL in case of error.
  */
 max_run_t *ParallelPrefixSum_nonblock(
 	uint64_t param_size,
-	const int64_t *instream_x,
-	int64_t *outstream_y);
+	const int32_t *instream_x,
+	int32_t *outstream_y);
 
 /**
  * \brief Advanced static interface, structure for the engine interface 'default'
@@ -52,8 +52,8 @@ max_run_t *ParallelPrefixSum_nonblock(
  */
 typedef struct { 
 	uint64_t param_size; /**<  [in] Interface Parameter "size". */
-	const int64_t *instream_x; /**<  [in] The stream should be of size (param_size * 8) bytes. */
-	int64_t *outstream_y; /**<  [out] The stream should be of size (param_size * 8) bytes. */
+	const int32_t *instream_x; /**<  [in] The stream should be of size (param_size * 4) bytes. */
+	int32_t *outstream_y; /**<  [out] The stream should be of size (param_size * 4) bytes. */
 } ParallelPrefixSum_actions_t;
 
 /**
