@@ -8,7 +8,7 @@
 <maxFile buildName="ParallelPrefixSum" buildOrUseExisting="build">
 <runConfiguration askBeforeAutoBuild="true">
 <mainClass>parallelprefixsum.ParallelPrefixSumManager</mainClass>
-<maxHeapSize>2</maxHeapSize>
+<maxHeapSize>8</maxHeapSize>
 </runConfiguration>
 <selectEngineTarget enabled="false">MAX3424A</selectEngineTarget>
 </maxFile>

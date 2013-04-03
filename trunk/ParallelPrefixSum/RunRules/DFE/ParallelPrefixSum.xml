@@ -21,7 +21,7 @@
 		</condition>
 		<java classname="parallelprefixsum.ParallelPrefixSumManager" fork="true" failonerror="true">
 			<env key="MAXSOURCEDIRS" value="src"/>
-			<jvmarg value="-Xmx2048m"/>
+			<jvmarg value="-Xmx8192m"/>
 			<arg line="${args}" />
 			<classpath>
 				<pathelement path="../RunRules/DFE/dist/bin"/>

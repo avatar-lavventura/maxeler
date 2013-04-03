@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "Maxfiles.h"
 
-#define SIZE 1024
+#define SIZE 1048576
 #define DEBUG 1
 
 void ParallelPrefixSumCPU(int32_t *dataIn, int32_t *dataOut, size_t size) {
@@ -24,7 +24,7 @@ int main() {
 	}
 
 	for (int i = 0; i < SIZE; i++) {
-		dataIn[i] = i + 1;
+		dataIn[i] = (i%5)+1;
 		dataOut[i] = 0;
 	}
 
@@ -35,7 +35,7 @@ int main() {
 
 	printf("Running DFE...\n");
 	ParallelPrefixSum(SIZE, dataIn, dataOut);
-	printf("End of DFE...\n");
+	printf("End of DFE...\nDFE");
 	if (DEBUG == 1) {
 		for (int i = 0; i < SIZE; i++) {
 			if (dataOut[i] == dataExpected[i]) {
