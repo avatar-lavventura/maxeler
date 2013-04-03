@@ -9,7 +9,7 @@ import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVectorType;
 
 public class ParallelPrefixSumKernel extends Kernel {
-	final static int PARALLELISM_DEGREE = 4;
+	final static int PARALLELISM_DEGREE = 1;
 
 	final DFEType TYPE_ELEMENT = dfeInt(32);
 	final DFEVectorType<DFEVar> TYPE_VECTOR = new DFEVectorType<DFEVar>(TYPE_ELEMENT,
