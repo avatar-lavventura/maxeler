@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include "Maxfiles.h"
 
-#define SIZE 1048576
-#define DEBUG 1
+#define SIZE 1073741824
+#define DEBUG 0
 
 void ParallelPrefixSumCPU(int32_t *dataIn, int32_t *dataOut, size_t size) {
 	dataOut[0] = dataIn[0];
@@ -32,9 +33,16 @@ int main() {
 		printf("Running CPU...\n");
 		ParallelPrefixSumCPU(dataIn, dataExpected, SIZE);
 	}
-
+	struct timeval start, end;
 	printf("Running DFE...\n");
-	ParallelPrefixSum(SIZE, dataIn, dataOut);
+	gettimeofday(&start, NULL);
+	max_run_t *execStatus = ParallelPrefixSum_nonblock(SIZE, dataIn, dataOut);
+	//ParallelPrefixSum(SIZE, dataIn, dataOut);
+	max_wait(execStatus);
+	gettimeofday(&end, NULL);
+	printf("%ld microseconds card execution\n", ((end.tv_sec * 1000000 + end.tv_usec)
+			  - (start.tv_sec * 1000000 + start.tv_usec)));
+
 	printf("End of DFE...\nDFE");
 	if (DEBUG == 1) {
 		for (int i = 0; i < SIZE; i++) {
