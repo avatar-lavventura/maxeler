@@ -4,7 +4,8 @@
 #include <sys/time.h>
 #include "Maxfiles.h"
 
-#define SIZE 1073741824
+//#define SIZE 1073741824
+#define SIZE 2048
 #define DEBUG 0
 
 void ParallelPrefixSumCPU(int32_t *dataIn, int32_t *dataOut, size_t size) {
@@ -18,32 +19,34 @@ int main() {
 	size_t dataSizeInBytes = SIZE * sizeof(int32_t);
 	int32_t *dataIn = malloc(dataSizeInBytes);
 	int32_t *dataOut = malloc(dataSizeInBytes);
-	int32_t *dataExpected = NULL;
+	int32_t *dataExpected =  malloc(dataSizeInBytes);
 
-	if(DEBUG == 1) {
-		dataExpected = malloc(dataSizeInBytes);
-	}
 
 	for (int i = 0; i < SIZE; i++) {
 		dataIn[i] = (i%5)+1;
 		dataOut[i] = 0;
 	}
 
-	if (DEBUG == 1) {
-		printf("Running CPU...\n");
-		ParallelPrefixSumCPU(dataIn, dataExpected, SIZE);
-	}
 	struct timeval start, end;
+	printf("Running CPU...\n");
+	gettimeofday(&start, NULL);
+	ParallelPrefixSumCPU(dataIn, dataExpected, SIZE);
+	gettimeofday(&end, NULL);
+	printf("CPU: %ld microseconds\n", ((end.tv_sec * 1000000 + end.tv_usec)
+				  - (start.tv_sec * 1000000 + start.tv_usec)));
+	printf("End of CPU...\n");
+
+
 	printf("Running DFE...\n");
 	gettimeofday(&start, NULL);
 	max_run_t *execStatus = ParallelPrefixSum_nonblock(SIZE, dataIn, dataOut);
 	//ParallelPrefixSum(SIZE, dataIn, dataOut);
 	max_wait(execStatus);
 	gettimeofday(&end, NULL);
-	printf("%ld microseconds card execution\n", ((end.tv_sec * 1000000 + end.tv_usec)
+	printf("DFE: %ld microseconds\n", ((end.tv_sec * 1000000 + end.tv_usec)
 			  - (start.tv_sec * 1000000 + start.tv_usec)));
 
-	printf("End of DFE...\nDFE");
+	printf("End of DFE...\n");
 	if (DEBUG == 1) {
 		for (int i = 0; i < SIZE; i++) {
 			if (dataOut[i] == dataExpected[i]) {
@@ -58,10 +61,8 @@ int main() {
 
 	free(dataIn);
 	free(dataOut);
+	free(dataExpected);
 
-	if(DEBUG == 1){
-		free(dataExpected);
-	}
 
 	return 0;
 }
