@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<maxCompilerManager>
+<enginePart internalEngineSubproject="SparseMatrixMultiplication_EngineCode" isSrcBin="false" isUseDefaultSelected="false" outputLocation="/SparseMatrixMultiplication_EngineCode/bin" projectName="SparseMatrixMultiplication"/>
+<cpuPart internalCpuSubproject="SparseMatrixMultiplication_CPUCode"/>
+<watchedFiles/>
+</maxCompilerManager>

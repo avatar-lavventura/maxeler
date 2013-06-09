@@ -1,0 +1,42 @@
+package spmm;
+
+import com.maxeler.maxcompiler.v2.build.EngineParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.CPUTypes;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.EngineInterface;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.InterfaceParam;
+import com.maxeler.maxcompiler.v2.managers.standard.Manager;
+import com.maxeler.maxcompiler.v2.managers.standard.Manager.IOType;
+
+public class SparseMatrixMultiplicationManager {
+	public static void main(String[] args) {
+		EngineParameters params = new EngineParameters(args);
+		Manager manager = new Manager(params);
+		Kernel kernel = new SparseMatrixMultiplicationKernel(
+				manager.makeKernelParameters());
+		manager.setKernel(kernel);
+		manager.setIO(IOType.ALL_CPU);
+		manager.createSLiCinterface(defaultInterface());
+		manager.build();
+	}
+
+	static EngineInterface defaultInterface() {
+		EngineInterface ei = new EngineInterface();
+		InterfaceParam valSize = ei.addParam("valSize", CPUTypes.UINT32);
+		InterfaceParam vectorSize = ei.addParam("vectorSize", CPUTypes.INT32);
+		InterfaceParam loopLength = ei.getAutoLoopOffset("SparseMatrixMultiplicationKernel", "loopLength");
+		ei.ignoreAutoLoopOffset("SparseMatrixMultiplicationKernel", "loopLength");
+		ei.setTicks("SparseMatrixMultiplicationKernel", valSize * loopLength );
+		ei.setScalar("SparseMatrixMultiplicationKernel", "valSize", valSize);
+		CPUTypes dataType = CPUTypes.FLOAT;
+		CPUTypes intType = CPUTypes.INT32;
+		InterfaceParam indexSizeInBytes = valSize * intType.sizeInBytes();
+		InterfaceParam inputSizeInBytes = valSize * dataType.sizeInBytes();
+		InterfaceParam outputSizeInBytes = vectorSize * dataType.sizeInBytes();
+		ei.setStream("FLAG", intType, indexSizeInBytes);
+		ei.setStream("INDX", CPUTypes.UINT32, indexSizeInBytes);
+		ei.setStream("VAL", dataType, inputSizeInBytes);
+		ei.setStream("output", dataType, outputSizeInBytes);
+		return ei;
+	}
+}
