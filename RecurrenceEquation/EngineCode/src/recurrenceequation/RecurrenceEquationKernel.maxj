@@ -1,0 +1,106 @@
+package recurrenceequation;
+
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.core.Stream.OffsetExpr;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVectorType;
+
+public class RecurrenceEquationKernel extends Kernel {
+	final static int PARALLELISM_DEGREE = 1;
+	final DFEType TYPE_ELEMENT = dfeInt(32);
+	final DFEVectorType<DFEVar> TYPE_IO = new DFEVectorType<DFEVar>(
+			TYPE_ELEMENT, PARALLELISM_DEGREE);
+	final DFEVectorType<DFEVar> TYPE_TEMP_VECTOR = new DFEVectorType<DFEVar>(
+			TYPE_ELEMENT, PARALLELISM_DEGREE * 2 * 2);
+
+	final DFEVectorType<DFEVar> TYPE_VECTOR = new DFEVectorType<DFEVar>(
+			TYPE_ELEMENT, 2);
+	final DFEVectorType<DFEVar> TYPE_MATRIX = new DFEVectorType<DFEVar>(
+			TYPE_ELEMENT, 4);
+
+	protected RecurrenceEquationKernel(KernelParameters parameters) {
+		super(parameters);
+		OffsetExpr loopLength = stream.makeOffsetAutoLoop("loopLength");
+		DFEVar ioControl = control.count.simpleCounter(32,
+				loopLength.getDFEVar(this, dfeUInt(32)));
+
+		DFEVector<DFEVar> a = io.input("a", TYPE_IO, ioControl.eq(0));
+		DFEVector<DFEVar> b = io.input("b", TYPE_IO, ioControl.eq(0));
+
+		DFEVar z0 = io.scalarInput("z0", TYPE_ELEMENT);
+		DFEVar z1 = io.scalarInput("z1", TYPE_ELEMENT);
+
+		DFEVector<DFEVar> previousVector = TYPE_VECTOR.newInstance(this);
+		DFEVar count = control.count.simpleCounter(32);
+		DFEVector<DFEVar> firstVector = TYPE_VECTOR.newInstance(this);
+		firstVector.connect(0, z1);
+		firstVector.connect(1, z0);
+
+		DFEVector<DFEVar> vectorToMultiply = count.eq(0) ? firstVector
+				: previousVector;
+		DFEVector<DFEVar> temporaryResult = TYPE_TEMP_VECTOR.newInstance(this);
+		temporaryResult.connect(0, a.getElement(0));
+		temporaryResult.connect(1, b.getElement(0));
+		temporaryResult.connect(2, constant.var(TYPE_ELEMENT, 1));
+		temporaryResult.connect(3, constant.var(TYPE_ELEMENT, 0));
+
+		for (int i = 1; i < PARALLELISM_DEGREE; i++) {
+			DFEVector<DFEVar> matrix = TYPE_MATRIX.newInstance(this);
+			matrix.connect(0, a.getElement(i));
+			matrix.connect(1, b.getElement(i));
+			matrix.connect(2, constant.var(TYPE_ELEMENT, 1));
+			matrix.connect(3, constant.var(TYPE_ELEMENT, 0));
+			DFEVector<DFEVar> matrixToMultiply = TYPE_MATRIX.newInstance(this);
+			for (int j = 0; j < 4; j++) {
+				matrixToMultiply.connect(j, temporaryResult.getElement(4*(i-1)+j));
+			}
+			DFEVector<DFEVar> nextMatrix = multiplyMatrices(matrix,
+					matrixToMultiply, 2, 2, 2);
+			for (int j = 0; j < 4; j++) {
+				temporaryResult.connect(4 * i + j, nextMatrix.getElement(j));
+			}
+		}
+
+		DFEVector<DFEVar> output = TYPE_IO.newInstance(this);
+
+		for(int i=0; i<PARALLELISM_DEGREE; i++){
+			DFEVector<DFEVar> matrixToMultiply = TYPE_MATRIX.newInstance(this);
+			for(int j=0; j<4; j++){
+				matrixToMultiply.connect(j,temporaryResult.getElement(4*i+j));
+			}
+			DFEVector<DFEVar> result = multiplyMatrices(matrixToMultiply, vectorToMultiply, 2, 2, 1);
+			output.connect(i,result.getElement(0));
+		}
+
+		DFEVector<DFEVar> nextVector = TYPE_VECTOR.newInstance(this);
+		for(int i=0; i<2;i++){
+			nextVector.connect(i,output.getElement(PARALLELISM_DEGREE-i-1));
+		}
+		for (int i = 0; i < 2; i++) {
+			previousVector.connect(i,
+					stream.offset(nextVector.getElement(i), -loopLength));
+		}
+		io.output("z", output, TYPE_IO, ioControl.eq(0));
+	}
+
+	protected DFEVector<DFEVar> multiplyMatrices(DFEVector<DFEVar> m1,
+			DFEVector<DFEVar> m2, int row1, int col1row2, int col2) {
+		final DFEVectorType<DFEVar> TYPE_RESULT = new DFEVectorType<DFEVar>(
+				TYPE_ELEMENT, row1 * col1row2);
+		DFEVector<DFEVar> result = TYPE_RESULT.newInstance(this);
+		for (int i = 0; i < row1; i++) { // matrix 1 Row
+			for (int j = 0; j < col2; j++) { // matrix 2 Column
+				DFEVar tmp = constant.var(TYPE_ELEMENT, 0);
+				for (int k = 0; k < col1row2; k++) { // matrix 1 Column
+					tmp += m1.getElement(col1row2 * i + k)
+							* m2.getElement(col2 * k + j);
+				}
+				result.connect(col1row2 * j + i, tmp);
+			}
+		}
+		return result;
+	}
+}
