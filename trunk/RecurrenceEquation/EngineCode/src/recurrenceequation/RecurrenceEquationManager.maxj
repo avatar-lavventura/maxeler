@@ -1,0 +1,45 @@
+package recurrenceequation;
+
+import com.maxeler.maxcompiler.v2.build.EngineParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.CPUTypes;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.EngineInterface;
+import com.maxeler.maxcompiler.v2.managers.engine_interfaces.InterfaceParam;
+import com.maxeler.maxcompiler.v2.managers.standard.Manager;
+import com.maxeler.maxcompiler.v2.managers.standard.Manager.IOType;
+
+public class RecurrenceEquationManager {
+	public static void main(String[] args) {
+		EngineParameters params = new EngineParameters(args);
+		Manager manager = new Manager(params);
+		Kernel kernel = new RecurrenceEquationKernel(
+				manager.makeKernelParameters());
+
+		manager.setKernel(kernel);
+		manager.setIO(IOType.ALL_CPU);
+		manager.createSLiCinterface(defaultInterface());
+		manager.build();
+	}
+
+	static EngineInterface defaultInterface() {
+		EngineInterface ei = new EngineInterface();
+		CPUTypes dataType = CPUTypes.INT32;
+
+		InterfaceParam size = ei.addParam("size", CPUTypes.UINT64);
+		InterfaceParam z0 = ei.addParam("z0", dataType);
+		InterfaceParam z1 = ei.addParam("z1", dataType);
+		InterfaceParam loopLength = ei.getAutoLoopOffset("RecurrenceEquationKernel", "loopLength");
+		ei.ignoreAutoLoopOffset("RecurrenceEquationKernel", "loopLength");
+		ei.setTicks("RecurrenceEquationKernel", (size * loopLength)/RecurrenceEquationKernel.PARALLELISM_DEGREE);
+		ei.setScalar("RecurrenceEquationKernel", "z0", z0);
+		ei.setScalar("RecurrenceEquationKernel", "z1", z1);
+
+		InterfaceParam dataSizeInBytes = size * dataType.sizeInBytes();
+
+		ei.setStream("a", dataType, dataSizeInBytes);
+		ei.setStream("b", dataType, dataSizeInBytes);
+		ei.setStream("z", dataType, dataSizeInBytes);
+
+		return ei;
+	}
+}
