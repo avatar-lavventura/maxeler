@@ -1,0 +1,66 @@
+package spmm;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
+import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
+import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.core.Stream.OffsetExpr;
+import com.maxeler.maxcompiler.v2.kernelcompiler.stdlib.memory.Memory;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
+import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEVar;
+import com.maxeler.maxcompiler.v2.utils.MathUtils;
+
+public class SparseMatrixMultiplicationKernel extends Kernel{
+	final DFEType TYPE_INT = dfeInt(32);
+	final DFEType TYPE_UINT = dfeUInt(32);
+	final DFEType TYPE_FLOAT = dfeFloat(8, 24);
+	protected SparseMatrixMultiplicationKernel(KernelParameters parameters) {
+		super(parameters);
+		double[] xVector = null;
+		try {
+			File f = new File("xvector.txt");
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+			int i=0;
+			String line = br.readLine();
+			xVector = new double[Integer.parseInt(line)];
+			while((line = br.readLine())!=null){
+				xVector[i] = Double.parseDouble(line);
+				i++;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Memory<DFEVar> xRom = mem.alloc(dfeFloat(8,24), xVector.length);
+		xRom.setContents(xVector);
+
+		DFEVar counter = control.count.simpleCounter(32);
+		OffsetExpr loopLength = stream.makeOffsetAutoLoop("loopLength");
+		DFEVar ioControl = control.count.simpleCounter(32,
+				loopLength.getDFEVar(this, dfeUInt(32)));
+		DFEVar valSize = io.scalarInput("valSize", TYPE_UINT);
+
+		DFEVar flag = io.input("FLAG", TYPE_INT,ioControl.eq(0));
+		DFEVar indx = io.input("INDX", TYPE_UINT,ioControl.eq(0));
+		DFEVar val = io.input("VAL", TYPE_FLOAT,ioControl.eq(0));
+
+		DFEVar x = xRom.read(indx.cast(dfeUInt(MathUtils.bitsToAddress(xVector.length))));
+
+		DFEVar tempCumulativeSum = TYPE_FLOAT.newInstance(this);
+
+		DFEVar cumulativeSum = flag.eq(0) ? tempCumulativeSum : 0 ;
+
+		DFEVar result = cumulativeSum + x * val;
+
+		DFEVar isOut = ioControl.eq(0)
+		.and(stream.offset(flag, loopLength).eq(1)
+				.or(counter.gte((valSize - 1) * loopLength.getDFEVar(this,TYPE_UINT))));
+
+		tempCumulativeSum <== stream.offset(result, -loopLength);
+
+		io.output("output",result,TYPE_FLOAT,isOut);
+	}
+}
